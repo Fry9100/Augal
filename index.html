@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Augentropfen Tracker</title>
+
+<!-- iOS "Zum Home-Bildschirm hinzufügen" Support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tropfen">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0c6e80">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h1>💧 Augentropfen</h1>
+      <div class="date-nav">
+        <button id="prevDay" class="icon-btn" aria-label="Vorheriger Tag">‹</button>
+        <span id="currentDateLabel" class="date-label">Heute</span>
+        <button id="nextDay" class="icon-btn" aria-label="Nächster Tag">›</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <section class="eye-card" data-eye="right">
+      <div class="eye-card-head">
+        <h2>Rechtes Auge</h2>
+        <span class="hint">stündlich abwechseln</span>
+      </div>
+
+      <div class="next-suggestion" id="rightSuggestion">
+        <span class="dot" id="rightDot"></span>
+        <span id="rightSuggestionText">Bereit für die erste Dosis</span>
+      </div>
+
+      <div class="dose-row">
+        <button class="dose-btn dex" data-eye="right" data-drug="Dex">
+          <span class="drug-name">Dex</span>
+          <span class="count" id="count-right-dex">0 / 5</span>
+        </button>
+        <button class="dose-btn flox" data-eye="right" data-drug="Flox">
+          <span class="drug-name">Flox</span>
+          <span class="count" id="count-right-flox">0 / 5</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="eye-card" data-eye="left">
+      <div class="eye-card-head">
+        <h2>Linkes Auge</h2>
+        <span class="hint">5× täglich</span>
+      </div>
+
+      <div class="dose-row single">
+        <button class="dose-btn dex" data-eye="left" data-drug="Dex">
+          <span class="drug-name">Dex</span>
+          <span class="count" id="count-left-dex">0 / 5</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="log-section">
+      <div class="log-head">
+        <h2>Protokoll</h2>
+        <button id="addManual" class="text-btn">+ manuell</button>
+      </div>
+      <ul id="logList" class="log-list"></ul>
+      <p id="emptyState" class="empty-state">Noch keine Einträge für diesen Tag.</p>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="manualDialog" class="manual-dialog">
+    <form method="dialog" id="manualForm">
+      <h3>Eintrag hinzufügen</h3>
+      <label>
+        Auge
+        <select id="manualEye">
+          <option value="left">Links</option>
+          <option value="right">Rechts</option>
+        </select>
+      </label>
+      <label>
+        Medikament
+        <select id="manualDrug">
+          <option value="Dex">Dex</option>
+          <option value="Flox">Flox</option>
+        </select>
+      </label>
+      <label>
+        Uhrzeit
+        <input type="time" id="manualTime" required>
+      </label>
+      <div class="dialog-actions">
+        <button type="button" id="manualCancel" class="text-btn">Abbrechen</button>
+        <button type="submit" class="primary-btn">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
