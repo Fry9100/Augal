@@ -83,6 +83,17 @@
     manualDrug: document.getElementById('manualDrug'),
     manualTime: document.getElementById('manualTime'),
     manualCancel: document.getElementById('manualCancel'),
+    exportBtn: document.getElementById('exportBtn'),
+    importBtn: document.getElementById('importBtn'),
+    exportDialog: document.getElementById('exportDialog'),
+    exportText: document.getElementById('exportText'),
+    exportClose: document.getElementById('exportClose'),
+    exportDownload: document.getElementById('exportDownload'),
+    exportCopy: document.getElementById('exportCopy'),
+    importDialog: document.getElementById('importDialog'),
+    importText: document.getElementById('importText'),
+    importCancel: document.getElementById('importCancel'),
+    importConfirm: document.getElementById('importConfirm'),
   };
 
   const counts = {
@@ -133,6 +144,58 @@
     const now = new Date();
     const { entry, dateKey } = addEntry(eye, drug, now.toISOString());
     showToast(`${EYE_LABEL[eye]} · ${drug} um ${formatTime(entry.ts)} protokolliert`, () => removeEntry(dateKey, entry.id));
+  }
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function triggerDownload(filename, text) {
+    try {
+      const blob = new Blob([text], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function isValidEntry(e) {
+    return e && typeof e.id === 'string' && (e.eye === 'left' || e.eye === 'right')
+      && (e.drug === 'Dex' || e.drug === 'Flox') && typeof e.ts === 'string' && !isNaN(Date.parse(e.ts));
+  }
+
+  function importData(jsonText) {
+    const parsed = JSON.parse(jsonText);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw new Error('Unerwartetes Format');
+    }
+    let added = 0;
+    for (const [dateKey, entries] of Object.entries(parsed)) {
+      if (!Array.isArray(entries)) continue;
+      if (!store[dateKey]) store[dateKey] = [];
+      const existingIds = new Set(store[dateKey].map(e => e.id));
+      for (const entry of entries) {
+        if (!isValidEntry(entry) || existingIds.has(entry.id)) continue;
+        store[dateKey].push(entry);
+        existingIds.add(entry.id);
+        added++;
+      }
+    }
+    saveStore();
+    return added;
   }
 
   function computeRightSuggestion(list) {
@@ -266,6 +329,44 @@
     d.setHours(h, m, 0, 0);
     addEntry(el.manualEye.value, el.manualDrug.value, d.toISOString());
     el.manualDialog.close();
+  });
+
+  el.exportBtn.addEventListener('click', () => {
+    el.exportText.value = JSON.stringify(store, null, 2);
+    el.exportDialog.showModal();
+    el.exportText.focus();
+    el.exportText.select();
+  });
+
+  el.exportClose.addEventListener('click', () => el.exportDialog.close());
+
+  el.exportCopy.addEventListener('click', async () => {
+    el.exportText.select();
+    const ok = await copyText(el.exportText.value);
+    showToast(ok ? 'In Zwischenablage kopiert' : 'Kopieren nicht möglich – Text ist markiert, bitte manuell kopieren');
+  });
+
+  el.exportDownload.addEventListener('click', () => {
+    const ok = triggerDownload(`augentropfen-backup-${todayKey()}.json`, el.exportText.value);
+    if (!ok) showToast('Download nicht möglich – bitte Text manuell kopieren');
+  });
+
+  el.importBtn.addEventListener('click', () => {
+    el.importText.value = '';
+    el.importDialog.showModal();
+  });
+
+  el.importCancel.addEventListener('click', () => el.importDialog.close());
+
+  el.importConfirm.addEventListener('click', () => {
+    try {
+      const added = importData(el.importText.value);
+      render();
+      el.importDialog.close();
+      showToast(added > 0 ? `${added} Einträge importiert` : 'Keine neuen Einträge gefunden');
+    } catch (e) {
+      showToast('Ungültiges JSON – Import fehlgeschlagen');
+    }
   });
 
   // periodic refresh so the "next dose in X min" countdown stays live

@@ -79,6 +79,17 @@
       <p id="emptyState" class="empty-state">Noch keine Einträge für diesen Tag.</p>
     </section>
 
+    <section class="backup-section">
+      <h2>Datensicherung</h2>
+      <p class="hint backup-hint">Die App speichert nur lokal in diesem Browser. Exportiere regelmäßig
+        (z. B. nach jedem Eintrag) als JSON, damit nichts verloren geht, falls der Browser die Daten
+        einmal löscht.</p>
+      <div class="backup-actions">
+        <button id="exportBtn" class="secondary-btn">⇩ Exportieren</button>
+        <button id="importBtn" class="secondary-btn">⇧ Importieren</button>
+      </div>
+    </section>
+
   </main>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -109,6 +120,29 @@
         <button type="submit" class="primary-btn">Speichern</button>
       </div>
     </form>
+  </dialog>
+
+  <dialog id="exportDialog" class="manual-dialog">
+    <h3>Daten exportieren</h3>
+    <p class="hint">Kopiere den Text oder lade die Datei herunter und sichere sie (z. B. in Dateien /
+      iCloud oder per Mail an dich selbst).</p>
+    <textarea id="exportText" class="backup-textarea" readonly></textarea>
+    <div class="dialog-actions">
+      <button type="button" id="exportClose" class="text-btn">Schließen</button>
+      <button type="button" id="exportDownload" class="text-btn">Datei speichern</button>
+      <button type="button" id="exportCopy" class="primary-btn">Kopieren</button>
+    </div>
+  </dialog>
+
+  <dialog id="importDialog" class="manual-dialog">
+    <h3>Daten importieren</h3>
+    <p class="hint">Zuvor exportierten JSON-Text hier einfügen. Vorhandene Einträge bleiben erhalten,
+      es werden nur fehlende ergänzt.</p>
+    <textarea id="importText" class="backup-textarea" placeholder="JSON hier einfügen…"></textarea>
+    <div class="dialog-actions">
+      <button type="button" id="importCancel" class="text-btn">Abbrechen</button>
+      <button type="button" id="importConfirm" class="primary-btn">Importieren</button>
+    </div>
   </dialog>
 
 </div>

@@ -399,3 +399,50 @@ html, body {
   font-weight: 600;
   font-size: 0.92rem;
 }
+
+.backup-section {
+  background: var(--card-bg);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.backup-section h2 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+.backup-hint {
+  margin: 0 0 12px;
+}
+
+.backup-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.secondary-btn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--teal-dark);
+  padding: 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.secondary-btn:active { background: var(--border); }
+
+.backup-textarea {
+  width: 100%;
+  min-height: 160px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  resize: vertical;
+}
