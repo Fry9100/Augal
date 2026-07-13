@@ -4,7 +4,7 @@ Eine kleine, installierbare Web-App (PWA) zum Protokollieren der Augentropfen mi
 
 ## Funktionen
 
-- **Rechtes und linkes Auge**: je ein Zähler für Dex (4×/Tag).
+- Ein gemeinsamer Zähler für Dex (4×/Tag) – wird immer in beide Augen zugleich getropft.
 - Ein Tap protokolliert die Dosis sofort mit aktueller Uhrzeit; "Rückgängig" korrigiert
   Fehltaps direkt über den Toast-Hinweis.
 - Protokoll-Liste mit allen Einträgen des Tages (löschbar) sowie manuelle Nacherfassung

@@ -3,13 +3,13 @@
 
   const STORAGE_KEY = 'augentropfen-log-v1';
   const TARGETS = {
-    left: { Dex: 4 },
-    right: { Dex: 4 },
+    both: { Dex: 4 },
   };
 
-  const EYE_LABEL = { left: 'Links', right: 'Rechts' };
+  // 'left'/'right' kept only so entries logged before doses were combined still display correctly
+  const EYE_LABEL = { left: 'Links Auge', right: 'Rechts Auge', both: 'Beide Augen' };
 
-  /** @type {Record<string, {id:string, eye:'left'|'right', drug:'Dex'|'Flox', ts:string}[]>} */
+  /** @type {Record<string, {id:string, eye:'left'|'right'|'both', drug:'Dex'|'Flox', ts:string}[]>} */
   let store = loadStore();
   let viewDate = todayKey();
 
@@ -76,7 +76,6 @@
     addManual: document.getElementById('addManual'),
     manualDialog: document.getElementById('manualDialog'),
     manualForm: document.getElementById('manualForm'),
-    manualEye: document.getElementById('manualEye'),
     manualDrug: document.getElementById('manualDrug'),
     manualTime: document.getElementById('manualTime'),
     manualCancel: document.getElementById('manualCancel'),
@@ -94,8 +93,7 @@
   };
 
   const counts = {
-    'left-Dex': document.getElementById('count-left-dex'),
-    'right-Dex': document.getElementById('count-right-dex'),
+    'both-Dex': document.getElementById('count-both-dex'),
   };
 
   let toastTimer = null;
@@ -139,7 +137,8 @@
   function logDose(eye, drug) {
     const now = new Date();
     const { entry, dateKey } = addEntry(eye, drug, now.toISOString());
-    showToast(`${EYE_LABEL[eye]} · ${drug} um ${formatTime(entry.ts)} protokolliert`, () => removeEntry(dateKey, entry.id));
+    const prefix = eye === 'both' ? '' : `${EYE_LABEL[eye]} · `;
+    showToast(`${prefix}${drug} um ${formatTime(entry.ts)} protokolliert`, () => removeEntry(dateKey, entry.id));
   }
 
   async function copyText(text) {
@@ -169,7 +168,7 @@
   }
 
   function isValidEntry(e) {
-    return e && typeof e.id === 'string' && (e.eye === 'left' || e.eye === 'right')
+    return e && typeof e.id === 'string' && (e.eye === 'left' || e.eye === 'right' || e.eye === 'both')
       && (e.drug === 'Dex' || e.drug === 'Flox') && typeof e.ts === 'string' && !isNaN(Date.parse(e.ts));
   }
 
@@ -201,16 +200,12 @@
     const list = entriesFor(viewDate);
 
     // counts
-    const leftDex = list.filter(e => e.eye === 'left' && e.drug === 'Dex').length;
-    const rightDex = list.filter(e => e.eye === 'right' && e.drug === 'Dex').length;
+    const bothDex = list.filter(e => e.eye === 'both' && e.drug === 'Dex').length;
 
-    counts['left-Dex'].textContent = `${leftDex} / ${TARGETS.left.Dex}`;
-    counts['right-Dex'].textContent = `${rightDex} / ${TARGETS.right.Dex}`;
+    counts['both-Dex'].textContent = `${bothDex} / ${TARGETS.both.Dex}`;
 
-    document.querySelector('.dose-btn[data-eye="left"][data-drug="Dex"]')
-      .classList.toggle('complete', leftDex >= TARGETS.left.Dex);
-    document.querySelector('.dose-btn[data-eye="right"][data-drug="Dex"]')
-      .classList.toggle('complete', rightDex >= TARGETS.right.Dex);
+    document.querySelector('.dose-btn[data-eye="both"][data-drug="Dex"]')
+      .classList.toggle('complete', bothDex >= TARGETS.both.Dex);
 
     // log list
     el.logList.innerHTML = '';
@@ -229,7 +224,7 @@
       info.className = 'log-info';
       const eyeLabel = document.createElement('span');
       eyeLabel.className = 'eye-label';
-      eyeLabel.textContent = `${EYE_LABEL[entry.eye]} Auge`;
+      eyeLabel.textContent = EYE_LABEL[entry.eye];
       const timeLabel = document.createElement('span');
       timeLabel.className = 'time-label';
       timeLabel.textContent = formatTime(entry.ts);
@@ -281,7 +276,7 @@
     const [h, m] = el.manualTime.value.split(':').map(Number);
     const d = keyToDate(viewDate);
     d.setHours(h, m, 0, 0);
-    addEntry(el.manualEye.value, el.manualDrug.value, d.toISOString());
+    addEntry('both', el.manualDrug.value, d.toISOString());
     el.manualDialog.close();
   });
 

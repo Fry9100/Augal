@@ -33,30 +33,16 @@
 
   <main class="content">
 
-    <section class="eye-card" data-eye="right">
+    <section class="eye-card" data-eye="both">
       <div class="eye-card-head">
-        <h2>Rechtes Auge</h2>
-        <span class="hint">4× täglich</span>
+        <h2>Augentropfen</h2>
+        <span class="hint">4× täglich, beide Augen</span>
       </div>
 
       <div class="dose-row">
-        <button class="dose-btn dex" data-eye="right" data-drug="Dex">
+        <button class="dose-btn dex" data-eye="both" data-drug="Dex">
           <span class="drug-name">Dex</span>
-          <span class="count" id="count-right-dex">0 / 4</span>
-        </button>
-      </div>
-    </section>
-
-    <section class="eye-card" data-eye="left">
-      <div class="eye-card-head">
-        <h2>Linkes Auge</h2>
-        <span class="hint">4× täglich</span>
-      </div>
-
-      <div class="dose-row">
-        <button class="dose-btn dex" data-eye="left" data-drug="Dex">
-          <span class="drug-name">Dex</span>
-          <span class="count" id="count-left-dex">0 / 4</span>
+          <span class="count" id="count-both-dex">0 / 4</span>
         </button>
       </div>
     </section>
@@ -88,13 +74,6 @@
   <dialog id="manualDialog" class="manual-dialog">
     <form method="dialog" id="manualForm">
       <h3>Eintrag hinzufügen</h3>
-      <label>
-        Auge
-        <select id="manualEye">
-          <option value="left">Links</option>
-          <option value="right">Rechts</option>
-        </select>
-      </label>
       <label>
         Medikament
         <select id="manualDrug">
