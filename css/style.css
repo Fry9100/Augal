@@ -135,38 +135,10 @@ html, body {
   color: var(--text-muted);
 }
 
-.next-suggestion {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  background: var(--bg);
-  border-radius: 10px;
-  padding: 8px 10px;
-  margin-bottom: 12px;
-}
-
-.next-suggestion .dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--text-muted);
-  flex-shrink: 0;
-}
-
-.next-suggestion.ready .dot { background: #2ecc71; }
-.next-suggestion.wait .dot { background: #e6b800; }
-.next-suggestion.done .dot { background: var(--teal); }
-
 .dose-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.dose-row.single {
   grid-template-columns: 1fr;
+  gap: 10px;
 }
 
 .dose-btn {
@@ -186,7 +158,6 @@ html, body {
 .dose-btn:active { transform: scale(0.96); }
 
 .dose-btn.dex { background: linear-gradient(160deg, var(--dex), #0f6f8c); }
-.dose-btn.flox { background: linear-gradient(160deg, var(--flox), #a24f1e); }
 
 .dose-btn .drug-name {
   font-size: 1.1rem;

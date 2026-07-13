@@ -3,10 +3,9 @@
 
   const STORAGE_KEY = 'augentropfen-log-v1';
   const TARGETS = {
-    left: { Dex: 5 },
-    right: { Dex: 5, Flox: 5 },
+    left: { Dex: 4 },
+    right: { Dex: 4 },
   };
-  const RIGHT_INTERVAL_MIN = 60;
 
   const EYE_LABEL = { left: 'Links', right: 'Rechts' };
 
@@ -74,8 +73,6 @@
     logList: document.getElementById('logList'),
     emptyState: document.getElementById('emptyState'),
     toast: document.getElementById('toast'),
-    rightSuggestion: document.getElementById('rightSuggestion'),
-    rightSuggestionText: document.getElementById('rightSuggestionText'),
     addManual: document.getElementById('addManual'),
     manualDialog: document.getElementById('manualDialog'),
     manualForm: document.getElementById('manualForm'),
@@ -99,7 +96,6 @@
   const counts = {
     'left-Dex': document.getElementById('count-left-dex'),
     'right-Dex': document.getElementById('count-right-dex'),
-    'right-Flox': document.getElementById('count-right-flox'),
   };
 
   let toastTimer = null;
@@ -198,38 +194,6 @@
     return added;
   }
 
-  function computeRightSuggestion(list) {
-    const rightEntries = list
-      .filter(e => e.eye === 'right')
-      .slice()
-      .sort((a, b) => new Date(a.ts) - new Date(b.ts));
-
-    const dexCount = rightEntries.filter(e => e.drug === 'Dex').length;
-    const floxCount = rightEntries.filter(e => e.drug === 'Flox').length;
-
-    if (dexCount >= TARGETS.right.Dex && floxCount >= TARGETS.right.Flox) {
-      return { cls: 'done', text: 'Tagesdosis rechts erreicht (5/5 Dex, 5/5 Flox) ✓' };
-    }
-
-    if (rightEntries.length === 0) {
-      return { cls: 'ready', text: 'Bereit für die erste Dosis (Dex oder Flox)' };
-    }
-
-    const last = rightEntries[rightEntries.length - 1];
-    let nextDrug = last.drug === 'Dex' ? 'Flox' : 'Dex';
-    // If the alternating drug already reached its target, stay on the other one
-    if (nextDrug === 'Dex' && dexCount >= TARGETS.right.Dex) nextDrug = 'Flox';
-    if (nextDrug === 'Flox' && floxCount >= TARGETS.right.Flox) nextDrug = 'Dex';
-
-    const elapsedMin = (Date.now() - new Date(last.ts).getTime()) / 60000;
-    const remaining = Math.max(0, Math.ceil(RIGHT_INTERVAL_MIN - elapsedMin));
-
-    if (elapsedMin >= RIGHT_INTERVAL_MIN) {
-      return { cls: 'ready', text: `Jetzt empfohlen: ${nextDrug} (letzte Dosis vor ${Math.floor(elapsedMin)} Min.)` };
-    }
-    return { cls: 'wait', text: `Nächste Dosis: ${nextDrug} in ca. ${remaining} Min.` };
-  }
-
   function render() {
     el.dateLabel.textContent = formatDateLabel(viewDate);
     el.nextDay.disabled = viewDate >= todayKey();
@@ -239,24 +203,14 @@
     // counts
     const leftDex = list.filter(e => e.eye === 'left' && e.drug === 'Dex').length;
     const rightDex = list.filter(e => e.eye === 'right' && e.drug === 'Dex').length;
-    const rightFlox = list.filter(e => e.eye === 'right' && e.drug === 'Flox').length;
 
     counts['left-Dex'].textContent = `${leftDex} / ${TARGETS.left.Dex}`;
     counts['right-Dex'].textContent = `${rightDex} / ${TARGETS.right.Dex}`;
-    counts['right-Flox'].textContent = `${rightFlox} / ${TARGETS.right.Flox}`;
 
     document.querySelector('.dose-btn[data-eye="left"][data-drug="Dex"]')
       .classList.toggle('complete', leftDex >= TARGETS.left.Dex);
     document.querySelector('.dose-btn[data-eye="right"][data-drug="Dex"]')
       .classList.toggle('complete', rightDex >= TARGETS.right.Dex);
-    document.querySelector('.dose-btn[data-eye="right"][data-drug="Flox"]')
-      .classList.toggle('complete', rightFlox >= TARGETS.right.Flox);
-
-    // suggestion (only meaningful for today/current data, but shown for any viewed day)
-    const suggestion = computeRightSuggestion(list);
-    el.rightSuggestion.classList.remove('ready', 'wait', 'done');
-    el.rightSuggestion.classList.add(suggestion.cls);
-    el.rightSuggestionText.textContent = suggestion.text;
 
     // log list
     el.logList.innerHTML = '';
@@ -368,9 +322,6 @@
       showToast('Ungültiges JSON – Import fehlgeschlagen');
     }
   });
-
-  // periodic refresh so the "next dose in X min" countdown stays live
-  setInterval(() => { if (viewDate === todayKey()) render(); }, 30000);
 
   render();
 
